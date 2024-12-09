@@ -85,25 +85,28 @@ def logout():
 
 @app.route("/")
 @login_required
-def hello_world():
-    print("Hello World")
-    message = "pAGINA iNICIAL INDEX..."
-    return render_template("error_msg.html", message=message)
+def index():
+
+    return render_template("index.html")
 
 @app.route("/perfil")
 @login_required
 def perfil():
     user_id = session['user_id']
-    user_data = db.execute("SELECT * FROM users WHERE id = ?", user_id)
-    # user_data = get_user_data[0]
+    get_user_data = db.execute("SELECT * FROM users WHERE id = ?", user_id)
+    user_data = get_user_data[0]
     print(user_data)
-    return render_template("perfil.html", user_data=user_data[0])
+    return render_template("perfil.html", user_data=user_data)
 
 @app.route("/select", methods = ["GET", "POST"])
 @login_required
 def select():
+    recebido = request.form.get("teste")
     if request.method == "POST":
-        return "POST"
+        print(recebido)
+        return recebido
 
     else:
+        print("foi no get")
+        print(recebido)
         return render_template("select.html")
