@@ -101,12 +101,32 @@ def perfil():
 @app.route("/select", methods = ["GET", "POST"])
 @login_required
 def select():
-    recebido = request.form.get("teste")
     if request.method == "POST":
-        print(recebido)
-        return recebido
+        user_id = session["user_id"]
+        dia_formulario = request.form.get("dia_formulario").zfill(2)
+        if (dia_formulario == None):
+            return error_msg("Erro inesperado, tente novamente...")
+        print(dia_formulario)
+
+        date_to_save = f"2024-12-{dia_formulario} 08:00:00"
+        print(date_to_save)
+        db.execute("INSERT INTO agenda (dia_ras, user_id) VALUES (?, ?)", date_to_save, user_id)
+        lista_dias = db.execute("SELECT DISTINCT strftime('%d', dia_ras) AS dia FROM agenda ORDER BY dia;")
+        print(lista_dias)
+        dias_reservados = []
+        for dia in lista_dias:
+            print(dia['dia'])
+            dias_reservados.append(dia['dia'])
+
+        print(dias_reservados)
+        return dia_formulario
 
     else:
         print("foi no get")
-        print(recebido)
-        return render_template("select.html")
+        lista_dias = db.execute("SELECT DISTINCT strftime('%d', dia_ras) AS dia FROM agenda ORDER BY dia;")
+        print(lista_dias)
+        dias_reservados = []
+        for dia in lista_dias:
+            print(dia['dia'])
+            dias_reservados.append(dia['dia'])
+        return render_template("select.html", dias_reservados=dias_reservados)
