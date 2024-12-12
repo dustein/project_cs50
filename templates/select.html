@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block Title %}
+    Selecione as Datas
+{% endblock %}
+
+{% block main %}
+    <h2>Seleção de Datas RAS</h2>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let calendarEl = document.getElementById('calendar');
+            let calendar = new FullCalendar.Calendar(calendarEl, {
+                height: 'auto',
+                locale: 'pt',
+                buttonText: {
+                    today:    'hoje',
+                    month:    'mês',
+                    week:     'semana',
+                    day:      'dia',
+                    list:     'list'
+                },
+                selectable: true,
+                dateClick: function(info) {
+                    const confirmaData = document.getElementById("confirma");
+                    let data_selecionada = info.dateStr;
+                    const formulario = document.createElement("form");
+                    formulario.setAttribute('method', "POST");
+                    formulario.setAttribute('action', "/select");
+                    confirmaData.appendChild(formulario);
+
+                    const form_input = document.createElement("input");
+                    form_input.setAttribute('type', "hidden");
+                    form_input.setAttribute('value', data_selecionada);
+                    form_input.setAttribute('name', "dia_formulario");
+
+                    const enviar_button = document.createElement("button");
+                    enviar_button.setAttribute('type', "submit");
+                    enviar_button.setAttribute('class', "btn btn-primary m-1");
+                    enviar_button.innerText = "Enviar";
+
+                    const exibe_data = document.createElement("p")
+                    exibe_data.setAttribute('value', data_selecionada)
+                    exibe_data.innerText = data_selecionada;
+                    formulario.appendChild(form_input);
+                    formulario.appendChild(exibe_data);
+                    formulario.appendChild(enviar_button);
+
+                },
+                eventClick: function() {
+                    console.log("clicou no EVENTO");
+                },
+                // eventMouseEnter: function() {
+                //     window.alert("MOUSE SOBRE O DIA")
+                // },
+                eventColor: '#378006',
+                eventBackgroundColor: 'black',
+                events: [
+                    {% for event in events %}
+                    {
+                    groupId: '{{event.group_id}}',
+                    title: '{{event.title}}',
+                    start: '{{event.event_start}}',
+                    end: '{{event.event_end}}',
+                    // display: 'background'
+                    },
+                    {% endfor %}
+                ]
+        })
+        calendar.render();
+        });
+      </script>
+      <div id="calendar"></div>
+      <div id="confirma"></div>
+
+
+
+{% endblock %}

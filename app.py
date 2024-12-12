@@ -86,25 +86,9 @@ def logout():
 @app.route("/")
 @login_required
 def index():
-    events = [
-            {
-                'title': 'UMA RAS',
-                'start': '2024-12-02',
-                'end': '2024-12-02',
-            },
-            {
-                'title': 'DUAS RAS',
-                'start': '2024-12-06',
-                'end': '2024-12-06',
-            },
-            {
-                'title': 'TRES RAS',
-                'start': '2024-12-07',
-                'end': '2024-12-07',
-            },
-        ]
 
-    return render_template("index.html", events=events)
+
+    return render_template("index.html")
 
 @app.route("/perfil")
 @login_required
@@ -118,45 +102,16 @@ def perfil():
 @app.route("/select", methods = ["GET", "POST"])
 @login_required
 def select():
+    events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda WHERE user_id = 1;")
+
     if request.method == "POST":
 
-        # user_id = session["user_id"]
-        # dia_formulario = request.form.get("dia_formulario").zfill(2)
-        # if (dia_formulario == None):
-        #     return error_msg("Erro inesperado, tente novamente...")
-        # print(dia_formulario)
+        user_id = session["user_id"]
+        
 
-        # date_to_save = f"2024-12-{dia_formulario} 08:00:00"
-        # print(date_to_save)
-        # db.execute("INSERT INTO agenda (dia_ras, user_id) VALUES (?, ?)", date_to_save, user_id)
-        # lista_dias = db.execute("SELECT DISTINCT strftime('%d', dia_ras) AS dia FROM agenda ORDER BY dia;")
-        # print(lista_dias)
-        # dias_reservados = []
-        # for dia in lista_dias:
-        #     print(dia['dia'])
-        #     dias_reservados.append(dia['dia'])
+        return render_template("select.html", events = events)
 
-        # print(dias_reservados)
-        # return dia_formulario
-
-        events = [
-            {
-                'todo' : 'RAS MARCADA',
-                'date' : '2024-12-12'
-            },
-            {
-                'todo' : 'RAS MARCADA',
-                'date' : '2024-12-16'
-            }
-        ]
-
-        return render_template("index.html", events = events)
     else:
-        print("foi no get")
-        lista_dias = db.execute("SELECT DISTINCT strftime('%d', dia_ras) AS dia FROM agenda ORDER BY dia;")
-        print(lista_dias)
-        dias_reservados = []
-        for dia in lista_dias:
-            print(dia['dia'])
-            dias_reservados.append(dia['dia'])
-        return render_template("select.html", dias_reservados=dias_reservados)
+
+
+        return render_template("select.html", events = events)
