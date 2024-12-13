@@ -1,0 +1,95 @@
+* {
+  box-sizing: border-box;
+}
+
+/* Calendar container */
+.caixa {
+  display: flex;
+  justify-content: center;
+  min-width: 400px;
+  width: 95%;
+  margin: 0;
+}
+
+.calendar {
+  max-width: 75vw;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Calendar header styling */
+.calendar-header {
+  text-align: center;
+  background-color: gray;
+  color: white;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+/* Days of the week styling */
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(10px, 1fr));
+  background-color: #0f0f0f;
+  color: white;
+}
+
+.calendar-days div {
+  padding: 1rem;
+  text-align: center;
+  /* font-weight: bold; */
+}
+
+/* Date cells styling */
+.calendar-dates {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(10px, 1fr));
+}
+
+.calendar-dates div {
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+/* Highlight today */
+#today {
+  background-color: #ffdd57;
+  font-weight: bold;
+}
+
+#form_input {
+  display: none;
+}
+
+#select-confirma {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  border: solid white 1px;
+  padding: 1rem;
+}
+
+#formulario {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#calendar {
+  color: white;
+  width: 100%;
+  min-width: 400px;
+  margin: auto;
+}
+
+#calendar a {
+  color: white;
+  text-decoration: none;
+}
+
+.fc-col-header {
+  background-color: gray;
+}

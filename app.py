@@ -103,14 +103,18 @@ def perfil():
 @login_required
 def select():
     events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda WHERE user_id = 1;")
-
+    print(events)
     if request.method == "POST":
 
         user_id = session["user_id"]
-        
-
-        return render_template("select.html", events = events)
-
+        group_id = user_id
+        selected_date = request.form.get("selected_date")
+        title = f'RAS {user_id}'
+        event_start = event_end = selected_date
+        print(user_id, group_id, title, event_start, event_end)
+        db.execute("INSERT INTO agenda (group_id, title, event_start, event_end, user_id) VALUES (?, ?, ?, ?, ?);", group_id, title, event_start, event_end, user_id)
+        # return render_template("select.html", events = events)
+        return redirect("/select")
     else:
 
 
