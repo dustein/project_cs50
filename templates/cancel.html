@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block Title %}
+    Cancelar Datas Agendadas
+{% endblock %}
+
+{% block main %}
+    <div>
+        <h2 class="mb-4 mt-4">Cancelamento de Datas RAS</h2>
+    </div>
+    <form action="/cancel" method="post" onsubmit="setTimeout(function () { window.location.reload(); }, 10)">
+        <ul id="cancel-list" class="list-group">
+            {% for data in events %}
+            <li class="list-group-item mb-1">
+                <input class="form-check-input me-1" type="radio" name="data_cancel" value="{{data.event_start}}" id="{{data.event_start}}">
+                <label class="form-check-label fs-3" for="{{data.event_start}}">{{data.event_day}}</label>
+              </li>
+            {% endfor %}
+        </ul>
+        <button class="btn btn-danger mt-4" type="submit">Cancelar</button>
+    </form>
+
+{% endblock %}

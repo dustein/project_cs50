@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block Title %}
+    RASCORE - Login
+{% endblock %}
+
+{% block main %}
+    <h2 class="mt-4 mb-4">Sistema <span class="text-decoration-underline fst-italic">R</span>AS<span class="fw-bolder">C</span>ORE</h2>
+    <div>
+        <svg class="mt-4 mb-4" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    </div>
+    <p>Login</p>
+    <form action="/login" method="post">
+        <p class="mb-4">
+            <input class="form-control mx-auto w-auto" type="text" autocomplete="off" autofocus name="username" placeholder="Nome de Usuário">
+        </p>
+        <p class="mb-4">
+            <input class="form-control mx-auto w-auto" type="password" name="password" placeholder= "Senha">
+        </p>
+        <button class="btn btn-primary mt-4" type="submit">Entrar</button>
+    </form>
+{% endblock %}

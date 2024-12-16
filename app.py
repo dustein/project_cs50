@@ -16,6 +16,15 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 
+@app.route("/")
+@login_required
+def index():
+
+    events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda")
+    print(events)
+
+    return render_template("index.html", events = events)
+
 @app.route("/register", methods=["POST", "GET"])
 def register():
     #limpar dados de sessao anterior
@@ -23,7 +32,7 @@ def register():
 
     if request.method == "POST":
 
-        username = request.form.get("username").lower()
+        username = request.form.get("username").upper()
         if not username:
             return error_msg("Usuário não informado.", 403)
         password = request.form.get("password")
@@ -49,11 +58,12 @@ def register():
     else:
         return render_template("register.html")
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
     if request.method == "POST":
-        username = request.form.get("username").lower()
+        username = request.form.get("username").upper()
         if not username:
             return error_msg("Usuário não foi informado...")
         look_username = db.execute("SELECT * FROM users WHERE username = ?", username)
@@ -71,6 +81,7 @@ def login():
         #gravar na sessao user autenticado
 
         session["user_id"] = look_username[0]["id"]
+        session["user_name"] = look_username[0]["username"]
         print("usuario autenticado")
 
         return redirect("/")
@@ -78,17 +89,12 @@ def login():
     else:
         return render_template("login.html")
 
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
 
-@app.route("/")
-@login_required
-def index():
-
-
-    return render_template("index.html")
 
 @app.route("/perfil")
 @login_required
@@ -102,20 +108,49 @@ def perfil():
 @app.route("/select", methods = ["GET", "POST"])
 @login_required
 def select():
-    events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda WHERE user_id = 1;")
+    user_id = session["user_id"]
+    events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda")
+    user_data = db.execute("SELECT username FROM users WHERE id = ?", user_id)
     print(events)
     if request.method == "POST":
-
-        user_id = session["user_id"]
         group_id = user_id
         selected_date = request.form.get("selected_date")
-        title = f'RAS {user_id}'
+        title = user_data[0]['username']
         event_start = event_end = selected_date
         print(user_id, group_id, title, event_start, event_end)
         db.execute("INSERT INTO agenda (group_id, title, event_start, event_end, user_id) VALUES (?, ?, ?, ?, ?);", group_id, title, event_start, event_end, user_id)
         # return render_template("select.html", events = events)
         return redirect("/select")
+
     else:
 
-
         return render_template("select.html", events = events)
+
+@app.route("/cancel", methods = ["GET", "POST"])
+@login_required
+def cancel():
+    user_id = session["user_id"]
+
+    from datetime import datetime
+    mes_hoje = datetime.today().strftime('%m')
+    mes_seguinte = int(mes_hoje) + 1
+    if (mes_seguinte > 12):
+        mes_seguinte = "01"
+
+# Acrescentar na lista todas as datas futuras, nao apenas do mes seguinte
+
+    events = db.execute("SELECT event_start, strftime('%d/%m', event_start) AS event_day FROM agenda WHERE user_id = ? AND date(event_start) > date('now');", user_id)
+        # events = db.execute("SELECT event_start, strftime('%d/%m', event_start) AS event_day FROM agenda WHERE user_id = ? AND strftime('%m', event_start) = ?;", user_id, mes_seguinte)
+    print(events)
+    if (request.method == "POST"):
+
+        data_cancel = request.form.get("data_cancel")
+        db.execute("DELETE FROM agenda WHERE event_start = ? AND user_id = ?", data_cancel, user_id)
+
+        return render_template("/cancel.html", events = events)
+
+    else:
+
+        return render_template("/cancel.html", events = events)
+
+

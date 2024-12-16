@@ -5,73 +5,104 @@
 {% endblock %}
 
 {% block main %}
-    <h2>Calendário RAS</h2>
+    <h2 class="mt-4 mb-4">Calendário RAS</h2>
     <script>
-
         document.addEventListener('DOMContentLoaded', function() {
+            let data_selecionada = '0000-00-00'
             let calendarEl = document.getElementById('calendar');
             let calendar = new FullCalendar.Calendar(calendarEl, {
-                themeSystem: 'slate',
                 height: 'auto',
-                locale: 'pt-br',
-                buttonText: {
-                    today:    'hoje',
-                    month:    'mês',
-                    week:     'semana',
-                    day:      'dia',
-                    list:     'list'
+                locale: 'pt',
+                handleWindowResize: true,
+                selectable: true,
+                showNonCurrentDates: false,
+                fixedWeekCount: false,
+                headerToolbar: {
+                    start: 'title', // will normally be on the left. if RTL, will be on the right
+                    center: '',
+                    end: 'prev,next' // will normally be on the right. if RTL, will be on the left
                 },
-                dateClick: function() {
-                    window.alert("DIA LIVRE");
-                },
+                titleFormat: {month: 'long', year: 'numeric'},
+                eventColor: 'white',
+                selectOverlap: false,
+                events: [
+                    {% for event in events %}
+                    {
+                    groupId: '{{event.group_id}}',
+                    title: '{{event.title}}',
+                    start: '{{event.event_start}}',
+                    end: '{{event.event_end}}',
+                    display: 'background',
+                    {% if event.group_id == '1' %}
+                    backgroundColor: '#7CB34290',
+                    {% elif event.group_id == '2'%}
+                    backgroundColor: '#FFEB3B90',
+                    {% elif event.group_id == '3' %}
+                    backgroundColor: '#7CB34290',
+                    {% elif event.group_id == '4' %}
+                    backgroundColor: '#ff000090',
+                    {% elif event.group_id == '5' %}
+                    backgroundColor: '#039BE590',
+                    {% elif event.group_id == '6' %}
+                    backgroundColor: '#8D6E6390',
+                    {% elif event.group_id == '7' %}
+                    backgroundColor: '#B0BEC590',
+                    {% elif event.group_id == '8' %}
+                    backgroundColor: '#FF572290',
+                    {% endif %}
+                    },
+                    {% endfor %}
+                ],
+                select: function(info){
+                            console.log(info.startStr);
+                            const confirmaData = document.getElementById("select-confirma");
+                            let data_selecionada = info.startStr;
+
+                            if (document.contains(document.getElementById("formulario"))) {
+                                document.getElementById("formulario").remove();
+                                const formulario = document.createElement("form");
+                            }
+                            const formulario = document.createElement("form");
+                            formulario.setAttribute('id', "formulario");
+                            formulario.setAttribute('method', "POST");
+                            formulario.setAttribute('action', "/select");
+
+                            const form_input = document.createElement("input");
+                            form_input.setAttribute('type', "hidden");
+                            form_input.setAttribute('value', data_selecionada);
+                            form_input.setAttribute('name', "selected_date");
+
+                            const exibe_data = document.createElement("p")
+                            exibe_data.setAttribute('value', data_selecionada)
+                            exibe_data.innerText = data_selecionada;
+
+                            const enviar_button = document.createElement("button");
+                            enviar_button.setAttribute('type', "submit");
+                            enviar_button.setAttribute('class', "btn btn-primary m-1");
+                            enviar_button.innerText = "Enviar";
+
+                            const instrucao = document.getElementById("instrucao");
+                            instrucao.innerText = "Confirme sua escolha :"
+                            formulario.appendChild(form_input);
+                            formulario.appendChild(exibe_data);
+                            formulario.appendChild(enviar_button);
+
+                            confirmaData.appendChild(formulario);
+                            },
                 eventClick: function() {
-                    window.alert("EVENTO");
+                    console.log("clicou no EVENTO");
                 },
                 // eventMouseEnter: function() {
                 //     window.alert("MOUSE SOBRE O DIA")
                 // },
-                eventColor: '#378006',
-                eventBackgroundColor: 'black',
 
-                events: [
-                    {% for event in events %}
-                    {
-                    groupId: 'testGroupId',
-                    title: '{{event.title}}',
-                    start: '{{event.start}}',
-                    end: '{{event.end}}',
-                    // display: 'background'
-                    },
-                    {% endfor %}
-                ]
         })
-
-
-            calendar.render();
+        calendar.render();
         });
-
       </script>
+
       <div class="caixa">
           <div id="calendar"></div>
       </div>
-    <!-- <div class="caixa">
-
-    <div class="calendar">
-
-        <div class="calendar-header">Dezembro 2024</div>
-
-        <div class="calendar-days">
-            <div>Dom</div>
-            <div>Seg</div>
-            <div>Ter</div>
-            <div>Qua</div>
-            <div>Qui</div>
-            <div>Sex</div>
-            <div>Sab</div>
-        </div>
-
-        <div class="calendar-dates">
-            <div class="today">1</div> <div>2</div> <div>3</div> <div>4</div> <div>5</div> <div>6</div> <div>7</div> <div>8</div> <div>9</div> <div>10</div> <div>11</div> <div>12</div> <div>13</div> <div>14</div> <div>15</div> <div>16</div> <div>17</div> <div>18</div> <div>19</div><div>20</div> <div>21</div> <div>22</div> <div>23</div> <div>24</div> <div>25</div> <div>26</div><div>27</div> <div>28</div> <div>29</div> <div>30</div><div>31</div><div></div><div></div><div></div><div></div>
-        </div> -->
 
 {% endblock %}

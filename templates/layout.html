@@ -18,7 +18,7 @@
 
         <!-- Full Calendar CDN -->
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css">
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css"> -->
 
         <link href="./static/style.css" rel="stylesheet">
 
@@ -35,12 +35,14 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbar">
                     {% if session["user_id"] %}
-                        <ul class="navbar-nav me-auto mt-2">
-                            <li class="nav-item"><a class="nav-link bg-secondary text-white ps-2 pe-2" href="/select">Selecionar Datas</a></li>
-                            <li class="nav-item"><a class="nav-link border ps-2" href="/perfil">Perfil</a></li>
+                        <ul class="navbar-nav me-auto mt-2 ps-2 pe-2">
+                            <li class="nav-item ps-1 pe-1"><a class="nav-link bg-primary text-white border border-primary ps-2 pe-2" href="/">Calendário</a></li>
+                            <li class="nav-item ps-1 pe-1"><a class="nav-link bg-success-subtle text-success-emphasis border border-success text-white ps-2 pe-2" href="/select">Selecionar Datas</a></li>
+                            <li class="nav-item ps-1 pe-1"><a class="nav-link bg-danger-subtle text-danger-emphasis border border-danger text-white ps-2 pe-2" href="/cancel">Cancelar Data</a></li>
+                            <li class="nav-item ps-1 pe-1"><a class="nav-link border ps-2" href="/perfil">Perfil</a></li>
                         </ul>
                         <ul class="navbar-nav ms-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/index"> User ID: {{session["user_id"]}}</a></li>
+                            <li class="nav-item"><a class="nav-link text-white" href="/perfil"> Usuário: {{session["user_name"]}}</a></li>
                             <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
                         </ul>
                     {% else %}
@@ -61,7 +63,7 @@
             </header>
         {% endif %}
 
-        <main class="container py-5 text-center flex-fill text-white">
+        <main class="container py-2 text-center flex-fill text-white">
             {% block main %}
                 <h1>MAIN</h1>
                 <div class="container">
@@ -81,7 +83,7 @@
             {% endblock %}
         </main>
 
-        <footer class="bg-dark text-white text-center pt-3">
+        <footer class="bg-dark bg-gradient text-white text-center pt-3">
             <p>CS50's Final Project - DuStein</p>
         </footer>
 

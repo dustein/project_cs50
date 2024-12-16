@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block Ttle %}
+    Dados do Usuário
+{% endblock %}
+
+{% block main %}
+    <h2 class="mt-4 mb-4">Dados do Usuário</h2>
+    <p class="mt-4 mb-4">Nome do usuário: {{user_data.username}}</p>
+    <p class="mt-4 mb-4">Id do usuário: {{user_data.id}}</p>
+    <button class="btn btn-primary mt-4" input name="action" onclick="history.back()" type="submit" value="Voltar">Voltar</button>
+
+{% endblock %}

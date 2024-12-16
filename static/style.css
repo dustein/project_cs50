@@ -1,81 +1,18 @@
-* {
-  box-sizing: border-box;
-}
-
-/* Calendar container */
 .caixa {
   display: flex;
   justify-content: center;
-  min-width: 400px;
-  width: 95%;
-  margin: 0;
-}
-
-.calendar {
-  max-width: 75vw;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Calendar header styling */
-.calendar-header {
-  text-align: center;
-  background-color: gray;
-  color: white;
-  padding: 0.5rem;
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-/* Days of the week styling */
-.calendar-days {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(10px, 1fr));
-  background-color: #0f0f0f;
-  color: white;
-}
-
-.calendar-days div {
-  padding: 1rem;
-  text-align: center;
-  /* font-weight: bold; */
-}
-
-/* Date cells styling */
-.calendar-dates {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(10px, 1fr));
-}
-
-.calendar-dates div {
-  padding: 1rem;
-  text-align: center;
-  border: 1px solid #ddd;
-}
-
-/* Highlight today */
-#today {
-  background-color: #ffdd57;
-  font-weight: bold;
-}
-
-#form_input {
-  display: none;
 }
 
 #select-confirma {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
   border: solid white 1px;
   padding: 1rem;
-}
-
-#formulario {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: 4rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 #calendar {
@@ -86,10 +23,124 @@
 }
 
 #calendar a {
-  color: white;
+  color: #000000;
   text-decoration: none;
+  font-weight: 500;
 }
 
 .fc-col-header {
   background-color: gray;
 }
+
+/* Calendar modifica cor weekends */
+.fc-day-sat, .fc-day-sun {
+  background-color: #686b6e !important;
+}
+
+.fc-day-sat a, .fc-day-sun a {
+  color: #00000050 !important;
+}
+
+/* cor do botao confirma dia ras */
+.btn-primary {
+  background-image: none;
+  background-color: #1a73e8;
+  font-weight: bold;
+  letter-spacing: 0.2rem;
+  padding: 1rem;
+}
+
+/* Nome Title Eventos */
+.fc .fc-bg-event .fc-event-title {
+  color: #FFFFFF;
+  font-weight: 600;
+  background-color: #2b2c2c90;
+  padding: 0.5rem;
+  /* width: 5ch; */
+  overflow: hidden;
+  font-size: 0.8rem;
+}
+
+.fc-daygrid-day-number {
+  background-color: #FFFFFF98;
+  padding: 0.5rem;
+}
+
+.fc-daygrid-day-number a {
+  color: red;
+  font-weight: 600;
+}
+
+.fc .fc-bg-event {
+  opacity: 1;
+}
+
+.fc-event {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* fullcalendar titulo do mes */
+.fc .fc-toolbar-title {
+  font-size: 1.5rem;
+  text-transform: capitalize;
+}
+
+@keyframes blink {
+  0% {
+      opacity: 1;
+  }
+
+  50% {
+      opacity: 0;
+  }
+
+  100% {
+      opacity: 1;
+  }
+}
+
+#instrucao {
+  margin: 0;
+  font-size: 1.5rem;
+  animation: blink 3s infinite;
+}
+
+#formulario {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+#formulario p {
+  font-size: 1.8rem;
+  margin-bottom: 0;
+}
+
+#formulario button {
+  padding: 0.4rem;
+}
+
+
+@media (max-width: 800px) {
+
+  .fc .fc-bg-event .fc-event-title {
+      padding: 0.2rem;
+      /* width: 5ch; */
+      overflow: hidden;
+      font-size: 0.6rem;
+      margin: 0;
+  }
+
+  #instrucao {
+      font-size: 1rem;
+  }
+
+  #formulario p {
+      font-size: 1.2rem;
+  }
+
+}
+

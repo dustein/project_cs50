@@ -7,60 +7,37 @@
 {% block main %}
     <div id="select-confirma">
         <p id="instrucao">Selecione uma Data RAS</p>
+
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // let mes_select = dataAtual.getMonth() + 1;
             let calendarEl = document.getElementById('calendar');
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 height: 'auto',
                 locale: 'pt',
                 handleWindowResize: true,
                 selectable: true,
-                dateClick: function(info) {
-
-                    const confirmaData = document.getElementById("select-confirma");
-                    let data_selecionada = info.dateStr;
-                    if (document.contains(document.getElementById("formulario"))) {
-                        document.getElementById("formulario").remove();
-                        const formulario = document.createElement("form");
-                    }
-                    const formulario = document.createElement("form");
-                    formulario.setAttribute('id', "formulario");
-                    formulario.setAttribute('method', "POST");
-                    formulario.setAttribute('action', "/select");
-
-                    const form_input = document.createElement("input");
-                    form_input.setAttribute('type', "hidden");
-                    form_input.setAttribute('value', data_selecionada);
-                    form_input.setAttribute('name', "selected_date");
-
-                    const exibe_data = document.createElement("p")
-                    exibe_data.setAttribute('value', data_selecionada)
-                    exibe_data.innerText = data_selecionada;
-
-                    const enviar_button = document.createElement("button");
-                    enviar_button.setAttribute('type', "submit");
-                    enviar_button.setAttribute('class', "btn btn-primary m-1");
-                    enviar_button.innerText = "Enviar";
-
-                    const instrucao = document.getElementById("instrucao");
-                    instrucao.innerText = "Confirme sua escolhida: "
-                    formulario.appendChild(form_input);
-                    formulario.appendChild(exibe_data);
-                    formulario.appendChild(enviar_button);
-                    
-                    confirmaData.appendChild(formulario);
-
+                initialDate: '2025-01-01',
+                selectAllow: function(selectInfo) {
+                                var day = selectInfo.start.getDay();
+                                return day !== 0 && day !== 6; // 0 = domingo, 6 = sábado
+                            },
+                selectLongPressDelay: 1,
+                // weekends: false,
+                showNonCurrentDates: false,
+                fixedWeekCount: false,
+                headerToolbar: {
+                    start: 'title',
+                    center: '',
+                    end: 'prev,next'
                 },
-                eventClick: function() {
-                    console.log("clicou no EVENTO");
-                },
-                // eventMouseEnter: function() {
-                //     window.alert("MOUSE SOBRE O DIA")
-                // },
+                titleFormat: {month: 'long', year: 'numeric'},
+                monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
                 eventColor: '#378006',
-                eventBackgroundColor: 'black',
+                selectOverlap: false,
                 events: [
                     {% for event in events %}
                     {
@@ -68,14 +45,79 @@
                     title: '{{event.title}}',
                     start: '{{event.event_start}}',
                     end: '{{event.event_end}}',
-                    // display: 'background'
+                    display: 'background',
+                    {% if event.group_id == '1' %}
+                    backgroundColor: '#7CB34290',
+                    {% elif event.group_id == '2'%}
+                    backgroundColor: '#FFEB3B90',
+                    {% elif event.group_id == '3' %}
+                    backgroundColor: '#7CB34290',
+                    {% elif event.group_id == '4' %}
+                    backgroundColor: '#ff000090',
+                    {% elif event.group_id == '5' %}
+                    backgroundColor: '#039BE590',
+                    {% elif event.group_id == '6' %}
+                    backgroundColor: '#8D6E6390',
+                    {% elif event.group_id == '7' %}
+                    backgroundColor: '#B0BEC590',
+                    {% elif event.group_id == '8' %}
+                    backgroundColor: '#FF572290',
+                    {% endif %}
                     },
                     {% endfor %}
-                ]
+                ],
+                select: function(info){
+
+                            const confirmaData = document.getElementById("select-confirma");
+                            let data_selecionada = info.startStr;
+                            let data_exibicao = new Date(data_selecionada).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
+                            // console.log(new Date(data_selecionada).toLocaleDateString());
+
+                            if (document.contains(document.getElementById("formulario"))) {
+                                document.getElementById("formulario").remove();
+                                const formulario = document.createElement("form");
+                            }
+                            const formulario = document.createElement("form");
+                            formulario.setAttribute('id', "formulario");
+                            formulario.setAttribute('method', "POST");
+                            formulario.setAttribute('action', "/select");
+
+                            const form_input = document.createElement("input");
+                            form_input.setAttribute('type', "hidden");
+                            form_input.setAttribute('value', data_selecionada);
+                            form_input.setAttribute('name', "selected_date");
+
+                            const exibe_data = document.createElement("p")
+                            exibe_data.setAttribute('value', data_selecionada)
+                            exibe_data.innerText = data_exibicao;
+
+                            const enviar_button = document.createElement("button");
+                            enviar_button.setAttribute('type', "submit");
+                            enviar_button.setAttribute('class', "btn btn-primary m-1");
+                            enviar_button.innerText = "Enviar";
+
+                            const instrucao = document.getElementById("instrucao");
+                            instrucao.innerText = "Confirme sua escolha :"
+                            formulario.appendChild(form_input);
+                            formulario.appendChild(exibe_data);
+                            formulario.appendChild(enviar_button);
+
+                            confirmaData.appendChild(formulario);
+                            },
+                eventClick: function() {
+                    console.log("clicou no EVENTO");
+                },
+                // eventMouseEnter: function() {
+                //     window.alert("MOUSE SOBRE O DIA")
+                // },
+
         })
         calendar.render();
         });
       </script>
-      <div id="calendar"></div>
+
+        <div class="caixa">
+            <div id="calendar"></div>
+        </div>
 
 {% endblock %}

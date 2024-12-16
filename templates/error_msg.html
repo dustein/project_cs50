@@ -5,9 +5,11 @@
 {% endblock %}
 
 {% block main %}
-    <h2>{{message}}</h2>
+    <h2 class="mt-4 mb-4">{{message}}</h2>
+        <div class="mt-4 mb-4">
+            <img src="./static/jaguar.png" />
+        </div>
 
-        <img src="./static/jaguar.png" />
-
+        <button class="btn btn-primary mt-4" input name="action" onclick="history.back()" type="submit" value="Voltar">Voltar</button>
 {% endblock %}
 
