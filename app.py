@@ -1,11 +1,10 @@
 import os
-from flask import Flask, render_template, session, redirect, request
+import sqlite3
+from flask import Flask, render_template, redirect, request, session, g
 from flask_session import Session
-from cs50 import SQL
+
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import error_msg, login_required
-
-app = Flask(__name__)
 
 db = SQL("sqlite:///rascore.db")
 
