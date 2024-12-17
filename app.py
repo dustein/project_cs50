@@ -2,8 +2,10 @@ import os
 import sqlite3
 from flask import Flask, render_template, redirect, request, session, g
 from flask_session import Session
-
 from werkzeug.security import check_password_hash, generate_password_hash
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
+
 from helpers import error_msg, login_required
 
 db = SQL("sqlite:///rascore.db")
