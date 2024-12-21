@@ -1,14 +1,38 @@
 import os
 import sqlite3
-from flask import Flask, render_template, redirect, request, session, g
-from flask_session import Session
+from flask import Flask, render_template, redirect, request, session, g, url_for
+# from flask_session import Session
+from flask_session.__init__ import Session
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
+from sqlalchemy import Column, Integer, String, Text, Float, DateTime, ForeignKey
+
 
 from helpers import error_msg, login_required
 
-db = SQL("sqlite:///rascore.db")
+# SQLAlchemy
+engine = create_engine('sqlite:///rascore.db')
+db_session = scoped_session(sessionmaker(bind=engine))
+Base = declarative_base()
+Base.query = db_session.query_property()
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    username = Column(String(80), unique=True, nullable=False)
+    hash = Column(String(255), nullable=False)
+
+class Agenda(Base):
+    __tablename__ = 'agenda'
+    id = Column(Integer, primary_key=True)
+    group_id = Column(Integer)
+    title = Column(String(255))
+    event_start = Column(DateTime)
+    event_end = Column(DateTime)
+    user_id = Column(Integer, ForeignKey('users.id'))
+
 
 #Flask session configuracoes
 app = Flask(__name__)
@@ -21,7 +45,8 @@ Session(app)
 @login_required
 def index():
 
-    events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda")
+    # events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda")
+    events = Agenda.query.all()
     print(events)
 
     return render_template("index.html", events = events)
@@ -51,8 +76,10 @@ def register():
         # gerar o hash pra senha informada
         hash_password = generate_password_hash(password, method='scrypt', salt_length=16)
 
-        db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", username, hash_password)
-
+        # db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", username, hash_password)
+        new_user = User(username=username, hash=hash_password)
+        db_session.add(new_user)
+        db_session.commit()
 
         return redirect("/")
 
@@ -67,7 +94,8 @@ def login():
         username = request.form.get("username").upper()
         if not username:
             return error_msg("Usuário não foi informado...")
-        look_username = db.execute("SELECT * FROM users WHERE username = ?", username)
+        # look_username = db.execute("SELECT * FROM users WHERE username = ?", username)
+        look_username = User.query.filter_by(username=username).first()
         print(look_username)
         if not look_username:
             return error_msg("Nome de usuário não encontrado.")
@@ -154,4 +182,11 @@ def cancel():
 
         return render_template("/cancel.html", events = events)
 
+# SQL Alchemy
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
 
+if __name__ == '__main__':
+    Base.metadata.create_all(bind=engine)
+    app.run(debug=True)

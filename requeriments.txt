@@ -1,5 +1,0 @@
-Flask
-Flask-Session
-pytz
-requests
-SQLAlchemy
