@@ -144,9 +144,23 @@ def select():
         return redirect(url_for('login'))
 
     events = db_session.query(Agenda).filter(user_id == user_id).all()
-
+    events_to_jinja = []
     for evento in events:
-        print(evento.event_start)
+        print(evento.event_start.strftime('%Y-%m-%d'))
+        # user_id, group_id, title, event_start, event_end
+        group_id = user_id
+        title = ""
+        event_start = event_end = ""
+        novo = {
+            "user_id" : evento.user_id,
+            "group_id" : evento.group_id,
+            "title" : evento.title,
+            "event_start" : evento.event_start.strftime('%Y-%m-%d'),
+            "event_end" : evento.event_start.strftime('%Y-%m-%d'),
+        }
+        events_to_jinja.append(novo)
+
+    print(events_to_jinja)
 
     if request.method == "POST":
         user_data = db_session.query(User).filter(User.id == user_id).first()
@@ -173,7 +187,7 @@ def select():
 
     else:
 
-        return render_template("select.html", events = events)
+        return render_template("select.html", events = events_to_jinja)
 
 @app.route("/cancel", methods = ["GET", "POST"])
 @login_required
