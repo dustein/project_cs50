@@ -41,28 +41,28 @@
                 events: [
                     {% for event in events %}
                     {
-                    groupId: '{{event.group_id}}',
-                    title: '{{event.title}}',
-                    start: '{{event.event_start}}',
-                    end: '{{event.event_end}}',
-                    display: 'background',
-                    {% if event.group_id == '1' %}
-                    backgroundColor: '#7CB34290',
-                    {% elif event.group_id == '2'%}
-                    backgroundColor: '#FFEB3B90',
-                    {% elif event.group_id == '3' %}
-                    backgroundColor: '#7CB34290',
-                    {% elif event.group_id == '4' %}
-                    backgroundColor: '#ff000090',
-                    {% elif event.group_id == '5' %}
-                    backgroundColor: '#039BE590',
-                    {% elif event.group_id == '6' %}
-                    backgroundColor: '#8D6E6390',
-                    {% elif event.group_id == '7' %}
-                    backgroundColor: '#B0BEC590',
-                    {% elif event.group_id == '8' %}
-                    backgroundColor: '#FF572290',
-                    {% endif %}
+                        groupId: '{{event.group_id}}',
+                        title: '{{event.title}}',
+                        start: '{{event.event_start}}',
+                        end: '{{event.event_end}}',
+                        display: 'background',
+                        {% if event.group_id == '1' %}
+                        backgroundColor: '#7CB34290',
+                        {% elif event.group_id == '2'%}
+                        backgroundColor: '#FFEB3B90',
+                        {% elif event.group_id == '3' %}
+                        backgroundColor: '#7CB34290',
+                        {% elif event.group_id == '4' %}
+                        backgroundColor: '#ff000090',
+                        {% elif event.group_id == '5' %}
+                        backgroundColor: '#039BE590',
+                        {% elif event.group_id == '6' %}
+                        backgroundColor: '#8D6E6390',
+                        {% elif event.group_id == '7' %}
+                        backgroundColor: '#B0BEC590',
+                        {% elif event.group_id == '8' %}
+                        backgroundColor: '#FF572290',
+                        {% endif %}
                     },
                     {% endfor %}
                 ],

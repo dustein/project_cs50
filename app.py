@@ -1,16 +1,22 @@
 import os
 import sqlite3
 from flask import Flask, render_template, redirect, request, session, g, url_for
-# from flask_session import Session
-from flask_session.__init__ import Session
+# from flask_session.__init__ import Session
+from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
-from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
-from sqlalchemy import Column, Integer, String, Text, Float, DateTime, ForeignKey
+from sqlalchemy import create_engine, func, delete, Column, Integer, String, Text, Float, DateTime, ForeignKey
+from datetime import datetime
 
 
 from helpers import error_msg, login_required
+
+#Flask session configuracoes
+app = Flask(__name__, static_folder='static')
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 # SQLAlchemy
 engine = create_engine('sqlite:///rascore.db')
@@ -33,19 +39,10 @@ class Agenda(Base):
     event_end = Column(DateTime)
     user_id = Column(Integer, ForeignKey('users.id'))
 
-
-#Flask session configuracoes
-app = Flask(__name__, static_folder='static')
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
-
-
 @app.route("/")
 @login_required
 def index():
 
-    # events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda")
     events = Agenda.query.all()
     print(events)
 
@@ -76,7 +73,6 @@ def register():
         # gerar o hash pra senha informada
         hash_password = generate_password_hash(password, method='scrypt', salt_length=16)
 
-        # db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", username, hash_password)
         new_user = User(username=username, hash=hash_password)
         db_session.add(new_user)
         db_session.commit()
@@ -94,7 +90,7 @@ def login():
         username = request.form.get("username").upper()
         if not username:
             return error_msg("Usuário não foi informado...")
-        # look_username = db.execute("SELECT * FROM users WHERE username = ?", username)
+
         look_username = User.query.filter_by(username=username).first()
         print(look_username)
         if not look_username:
@@ -104,46 +100,39 @@ def login():
         print(password)
         if not password:
             return error_msg("Não foi informada a senha...")
-        # if not check_password_hash(look_username[0]['hash'], password):
+
         if not check_password_hash(look_username.hash, password):
 
             return error_msg("Senha incorreta.")
-
-        #gravar na sessao user autenticado
-
-        # session["user_id"] = look_username.id
-        # session["user_name"] = look_username.username
 
         if look_username:
             session["user_id"] = look_username.id
             session["user_name"] = look_username.username
         else:
-    # Lidar com o caso em que o usuário não foi encontrado
             return error_msg("Usuário não encontrado.")
-
 
         print("usuario autenticado")
 
         return redirect("/")
 
     else:
-        return render_template("login.html")
 
+        return render_template("login.html")
 
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
 
-
 @app.route("/perfil")
 @login_required
 def perfil():
-    user_id = session['user_id']
-    # get_user_data = db.execute("SELECT * FROM users WHERE id = ?", user_id)
-    # user_data = get_user_data[0]
-    with Session(engine) as session:
-        user_data = session.query(User).filter(User.id == user_id).first()
+    user_id = session["user_id"]
+    if user_id is None:
+        return redirect(url_for('login'))
+
+    user_data = db_session.query(User).filter(User.id == user_id).first()
+    
     print(user_data)
     return render_template("perfil.html", user_data=user_data)
 
@@ -151,34 +140,35 @@ def perfil():
 @login_required
 def select():
     user_id = session["user_id"]
-    # events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda")
-    with Session(engine) as session:
-        stmt = select(Agenda.group_id, Agenda.title, Agenda.event_start, Agenda.event_end)
-        events = session.execute(stmt).fetchall()
-    # user_data = db.execute("SELECT username FROM users WHERE id = ?", user_id)
-    with Session(engine) as session:
-        user_data = session.query(User).filter(User.id == user_id).first()
-    print(events)
+    if user_id is None:
+        return redirect(url_for('login'))
+
+    events = db_session.query(Agenda).filter(user_id == user_id).all()
+
+    for evento in events:
+        print(evento.event_start)
+
     if request.method == "POST":
+        user_data = db_session.query(User).filter(User.id == user_id).first()
         group_id = user_id
         selected_date = request.form.get("selected_date")
-        title = user_data[0]['username']
+        title = user_data.username
         event_start = event_end = selected_date
         print(user_id, group_id, title, event_start, event_end)
-        # db.execute("INSERT INTO agenda (group_id, title, event_start, event_end, user_id) VALUES (?, ?, ?, ?, ?);", group_id, title, event_start, event_end, user_id)
+        
         def insert_event(group_id, title, event_start, event_end, user_id):
-            with Session(engine) as session:
-                new_event = Agenda(
-                    group_id=group_id,
-                    title=title,
-                    event_start=event_start,
-                    event_end=event_end,
-                    user_id=user_id
-                )
-                session.add(new_event)
-                session.commit()
+            new_event = Agenda(
+                group_id=group_id,
+                title=title,
+                event_start=datetime.strptime(event_start, '%Y-%m-%d'),
+                event_end=datetime.strptime(event_end, '%Y-%m-%d'),
+                user_id=user_id
+            )
+            db_session.add(new_event)
+            db_session.commit()
+            
         insert_event(group_id, title, event_start, event_end, user_id)
-        # return render_template("select.html", events = events)
+        
         return redirect("/select")
 
     else:
@@ -196,9 +186,6 @@ def cancel():
     if (mes_seguinte > 12):
         mes_seguinte = "01"
 
-# Acrescentar na lista todas as datas futuras, nao apenas do mes seguinte
-
-    # events = db.execute("SELECT event_start, strftime('%d/%m', event_start) AS event_day FROM agenda WHERE user_id = ? AND date(event_start) > date('now');", user_id)
     def get_future_events(user_id):
         with Session(engine) as session:
             stmt = select(
