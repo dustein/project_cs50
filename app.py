@@ -35,7 +35,7 @@ class Agenda(Base):
 
 
 #Flask session configuracoes
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
@@ -104,13 +104,24 @@ def login():
         print(password)
         if not password:
             return error_msg("Não foi informada a senha...")
-        if not check_password_hash(look_username[0]['hash'], password):
+        # if not check_password_hash(look_username[0]['hash'], password):
+        if not check_password_hash(look_username.hash, password):
+
             return error_msg("Senha incorreta.")
 
         #gravar na sessao user autenticado
 
-        session["user_id"] = look_username[0]["id"]
-        session["user_name"] = look_username[0]["username"]
+        # session["user_id"] = look_username.id
+        # session["user_name"] = look_username.username
+
+        if look_username:
+            session["user_id"] = look_username.id
+            session["user_name"] = look_username.username
+        else:
+    # Lidar com o caso em que o usuário não foi encontrado
+            return error_msg("Usuário não encontrado.")
+
+
         print("usuario autenticado")
 
         return redirect("/")
@@ -129,8 +140,10 @@ def logout():
 @login_required
 def perfil():
     user_id = session['user_id']
-    get_user_data = db.execute("SELECT * FROM users WHERE id = ?", user_id)
-    user_data = get_user_data[0]
+    # get_user_data = db.execute("SELECT * FROM users WHERE id = ?", user_id)
+    # user_data = get_user_data[0]
+    with Session(engine) as session:
+        user_data = session.query(User).filter(User.id == user_id).first()
     print(user_data)
     return render_template("perfil.html", user_data=user_data)
 
@@ -138,8 +151,13 @@ def perfil():
 @login_required
 def select():
     user_id = session["user_id"]
-    events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda")
-    user_data = db.execute("SELECT username FROM users WHERE id = ?", user_id)
+    # events = db.execute("SELECT group_id, title, event_start, event_end FROM agenda")
+    with Session(engine) as session:
+        stmt = select(Agenda.group_id, Agenda.title, Agenda.event_start, Agenda.event_end)
+        events = session.execute(stmt).fetchall()
+    # user_data = db.execute("SELECT username FROM users WHERE id = ?", user_id)
+    with Session(engine) as session:
+        user_data = session.query(User).filter(User.id == user_id).first()
     print(events)
     if request.method == "POST":
         group_id = user_id
@@ -147,7 +165,19 @@ def select():
         title = user_data[0]['username']
         event_start = event_end = selected_date
         print(user_id, group_id, title, event_start, event_end)
-        db.execute("INSERT INTO agenda (group_id, title, event_start, event_end, user_id) VALUES (?, ?, ?, ?, ?);", group_id, title, event_start, event_end, user_id)
+        # db.execute("INSERT INTO agenda (group_id, title, event_start, event_end, user_id) VALUES (?, ?, ?, ?, ?);", group_id, title, event_start, event_end, user_id)
+        def insert_event(group_id, title, event_start, event_end, user_id):
+            with Session(engine) as session:
+                new_event = Agenda(
+                    group_id=group_id,
+                    title=title,
+                    event_start=event_start,
+                    event_end=event_end,
+                    user_id=user_id
+                )
+                session.add(new_event)
+                session.commit()
+        insert_event(group_id, title, event_start, event_end, user_id)
         # return render_template("select.html", events = events)
         return redirect("/select")
 
@@ -168,14 +198,38 @@ def cancel():
 
 # Acrescentar na lista todas as datas futuras, nao apenas do mes seguinte
 
-    events = db.execute("SELECT event_start, strftime('%d/%m', event_start) AS event_day FROM agenda WHERE user_id = ? AND date(event_start) > date('now');", user_id)
-        # events = db.execute("SELECT event_start, strftime('%d/%m', event_start) AS event_day FROM agenda WHERE user_id = ? AND strftime('%m', event_start) = ?;", user_id, mes_seguinte)
+    # events = db.execute("SELECT event_start, strftime('%d/%m', event_start) AS event_day FROM agenda WHERE user_id = ? AND date(event_start) > date('now');", user_id)
+    def get_future_events(user_id):
+        with Session(engine) as session:
+            stmt = select(
+                Agenda.event_start,
+                func.strftime('%d/%m', Agenda.event_start).label('event_day')
+            ).where(
+                Agenda.user_id == user_id,
+                Agenda.event_start > func.current_date()
+            )
+            
+            results = session.execute(stmt).fetchall()
+        
+        return results
+    events = get_future_events(user_id)
     print(events)
+
     if (request.method == "POST"):
 
         data_cancel = request.form.get("data_cancel")
-        db.execute("DELETE FROM agenda WHERE event_start = ? AND user_id = ?", data_cancel, user_id)
+        # db.execute("DELETE FROM agenda WHERE event_start = ? AND user_id = ?", data_cancel, user_id)
+        def delete_event(data_cancel, user_id):
+            with Session(engine) as session:
+                stmt = delete(Agenda).where(
+                    Agenda.event_start == data_cancel,
+                    Agenda.user_id == user_id
+                )
+                result = session.execute(stmt)
+                session.commit()
+                return result.rowcount  # Retorna o número de linhas afetadas
 
+        rows_deleted = delete_event(data_cancel, user_id)
         return render_template("/cancel.html", events = events)
 
     else:
