@@ -42,11 +42,24 @@ class Agenda(Base):
 @app.route("/")
 @login_required
 def index():
+    user_id = session["user_id"]
+    if user_id is None:
+        return redirect(url_for('login'))
 
+    events = db_session.query(Agenda).filter(user_id == user_id).all()
+    events_to_jinja = []
+    for evento in events:
+        novo = {
+            "user_id" : evento.user_id,
+            "group_id" : evento.group_id,
+            "title" : evento.title,
+            "event_start" : evento.event_start.strftime('%Y-%m-%d'),
+            "event_end" : evento.event_start.strftime('%Y-%m-%d'),
+        }
+        events_to_jinja.append(novo)
     events = Agenda.query.all()
-    print(events)
 
-    return render_template("index.html", events = events)
+    return render_template("index.html", events = events_to_jinja)
 
 @app.route("/register", methods=["POST", "GET"])
 def register():
@@ -147,10 +160,10 @@ def select():
     events_to_jinja = []
     for evento in events:
         print(evento.event_start.strftime('%Y-%m-%d'))
-        # user_id, group_id, title, event_start, event_end
-        group_id = user_id
-        title = ""
-        event_start = event_end = ""
+        
+        # group_id = user_id
+        # title = ""
+        # event_start = event_end = ""
         novo = {
             "user_id" : evento.user_id,
             "group_id" : evento.group_id,
@@ -193,49 +206,43 @@ def select():
 @login_required
 def cancel():
     user_id = session["user_id"]
+    # mes_hoje = datetime.today().strftime('%m')
+    # mes_seguinte = int(mes_hoje) + 1
+    # if (mes_seguinte > 12):
+    #     mes_seguinte = "01"
+    current_dateTime = datetime.now()
 
-    from datetime import datetime
-    mes_hoje = datetime.today().strftime('%m')
-    mes_seguinte = int(mes_hoje) + 1
-    if (mes_seguinte > 12):
-        mes_seguinte = "01"
+    datas = db_session.query(Agenda).filter(Agenda.user_id == user_id, Agenda.event_start > current_dateTime)
+    events_to_jinja = []
+    for evento in datas:
+        novo = {
+            "id" : evento.id,
+            "user_id" : evento.user_id,
+            "event_start" : evento.event_start.strftime('%d-%m-%Y'),
+        }
+        events_to_jinja.append(novo)
 
-    def get_future_events(user_id):
-        with Session(engine) as session:
-            stmt = select(
-                Agenda.event_start,
-                func.strftime('%d/%m', Agenda.event_start).label('event_day')
-            ).where(
-                Agenda.user_id == user_id,
-                Agenda.event_start > func.current_date()
-            )
-            
-            results = session.execute(stmt).fetchall()
-        
-        return results
-    events = get_future_events(user_id)
-    print(events)
 
     if (request.method == "POST"):
 
         data_cancel = request.form.get("data_cancel")
-        # db.execute("DELETE FROM agenda WHERE event_start = ? AND user_id = ?", data_cancel, user_id)
-        def delete_event(data_cancel, user_id):
-            with Session(engine) as session:
-                stmt = delete(Agenda).where(
-                    Agenda.event_start == data_cancel,
-                    Agenda.user_id == user_id
-                )
-                result = session.execute(stmt)
-                session.commit()
-                return result.rowcount  # Retorna o número de linhas afetadas
-
-        rows_deleted = delete_event(data_cancel, user_id)
-        return render_template("/cancel.html", events = events)
-
+        date_object = datetime.strptime(data_cancel, '%d-%m-%Y').date()
+        print("data cancel: ")
+        print(f"{date_object} 00:00:00.000000")
+        date_to_delete = f"{date_object} 00:00:00.000000"
+        event_to_delete = db_session.query(Agenda).filter(Agenda.event_start == date_to_delete, Agenda.user_id == user_id).first()
+        if event_to_delete:
+            db_session.delete(event_to_delete)
+            db_session.commit()
+            print(f"Evento com id {event_to_delete.id} e título '{event_to_delete.title}' deletado.")
+        else:
+            print("Nenhum evento encontrado para deletar.")
+        
+        # return render_template("/cancel.html", events = events_to_jinja)
+        return redirect("/cancel")
     else:
 
-        return render_template("/cancel.html", events = events)
+        return render_template("/cancel.html", events = events_to_jinja)
 
 # SQL Alchemy
 @app.teardown_appcontext
