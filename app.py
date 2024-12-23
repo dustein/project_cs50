@@ -159,11 +159,6 @@ def select():
     events = db_session.query(Agenda).filter(user_id == user_id).all()
     events_to_jinja = []
     for evento in events:
-        print(evento.event_start.strftime('%Y-%m-%d'))
-        
-        # group_id = user_id
-        # title = ""
-        # event_start = event_end = ""
         novo = {
             "user_id" : evento.user_id,
             "group_id" : evento.group_id,
@@ -238,8 +233,8 @@ def cancel():
         else:
             print("Nenhum evento encontrado para deletar.")
         
-        # return render_template("/cancel.html", events = events_to_jinja)
         return redirect("/cancel")
+    
     else:
 
         return render_template("/cancel.html", events = events_to_jinja)
