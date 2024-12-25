@@ -52,7 +52,7 @@ This application was developed with a mobile-first focus, but it is perfectly ad
 
 1. New User Registration
 
-![Register User screen](./static/tela_cadastro.png)
+![Register User screen]("./static/tela_cadastro.png" width="50%")
 
     Users provide a username and password (entered twice for verification)
     Backend verifications:
