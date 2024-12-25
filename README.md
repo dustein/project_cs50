@@ -52,7 +52,7 @@ This application was developed with a mobile-first focus, but it is perfectly ad
 
 1. New User Registration
 
-![Register User screen](./static/tela_cadastro.png)
+![Register User screen](./static/tela_cadastro-220px.png)
 
 - Users provide a username and password (entered twice for verification)
 - Backend verifications:
@@ -62,21 +62,21 @@ This application was developed with a mobile-first focus, but it is perfectly ad
 
 2. User Login
 
-![Login screen](./static/tela_login.png)
+![Login screen](./static/tela_login-220px.png)
 
 - Login template for existing users
 - Users enter their username and password
 
 3. Main Calendar View (Index)
 
-![Index screen](./static/tela_inicial.png)
+![Index screen](./static/tela_inicial-300px.png)
 
 - Displays the current month's calendar
 - Shows all scheduled dates with corresponding usernames
 
 4. Date Selection
 
-![Select Date screen](./static/tela_selecione.png)
+![Select Date screen](./static/tela_selecione-300px.png)
 
 - Users can schedule work days
 - Restrictions:
@@ -86,14 +86,14 @@ This application was developed with a mobile-first focus, but it is perfectly ad
 
 5. Cancellation Feature
 
-![Cancel Schedule screen](./static/tela_cancela.png)
+![Cancel Schedule screen](./static/tela_cancela-220px.png)
 
 - Displays a list of days scheduled by the user
 - Allows cancellation of individual scheduled days as needed
 
 6. User Profile
 
-![User Profile screen](./static/tela_perfil.png)
+![User Profile screen](./static/tela_perfil-220px.png)
 
 - Displays user data:
     Username
