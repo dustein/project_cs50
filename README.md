@@ -5,14 +5,14 @@
 RASCore is an innovative and practical web application that solves a real-world work scheduling problem. Here's a summary of the main features and technologies of this project:
 This project not only solves a specific scheduling problem but also demonstrates ability to develop complete web solutions, integrating various technologies and libraries. The transition from the CS50.dev environment to a local development setup also shows adaptability and understanding of different development configurations.
 
-##### Core Functionality
+#### Core Functionality
 RASCore allows registered users to efficiently schedule work days. The key features include:
 
 - Selection of work days through an interactive calendar;
 - Automatic distribution of weekdays among users;
 - Simplification of the scheduling process, eliminating the need for lengthy message exchanges;
 
-##### Technologies Used
+#### Technologies Used
 I have employed a variety of modern technologies to develop RASCore:
 
 - Backend: Python with Flask
@@ -21,7 +21,7 @@ I have employed a variety of modern technologies to develop RASCore:
 - Database: SQLite3 with SQLAlchemy
 - Calendar Library: Fullcalendar.io
 
-##### Development Process
+#### Development Process
 
 - Started development on the CS50.dev platform
 - Migrated to a local development machine
@@ -29,7 +29,7 @@ I have employed a variety of modern technologies to develop RASCore:
 - Implemented and configured the Fullcalendar library
 - Performed extensive CSS styling and JavaScript programming
 
-##### Challenges and Learnings
+#### Challenges and Learnings
 The project presented several challenges that resulted in significant learning:
 
 - Configuration and use of the Fullcalendar library;
@@ -37,7 +37,7 @@ The project presented several challenges that resulted in significant learning:
 - Development of complex scheduling logic;
 - Integration of interactive frontend with Flask backend;
 
-##### Next Steps
+#### Next Steps
 I plan to deploy RASCore soon for real use in your work activities, demonstrating the practical value and applicability of the project.
 
 Here's an organized description of your RASCore app's functionalities with corresponding screenshots:
