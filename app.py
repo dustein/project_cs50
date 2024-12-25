@@ -1,15 +1,12 @@
 import os
 import sqlite3
-from flask import Flask, render_template, redirect, request, session, g, url_for
-# from flask_session.__init__ import Session
+from flask import Flask, render_template, redirect, request, session, url_for
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 from sqlalchemy import create_engine, func, delete, Column, Integer, String, Text, Float, DateTime, ForeignKey
 from datetime import datetime
-
-
 from helpers import error_msg, login_required
 
 #Flask session configuracoes
@@ -63,7 +60,6 @@ def index():
 
 @app.route("/register", methods=["POST", "GET"])
 def register():
-    #limpar dados de sessao anterior
     session.clear()
 
     if request.method == "POST":
@@ -80,12 +76,7 @@ def register():
         if (password != re_password):
             return error_msg("Senhas informadas divergem entre si.", 403)
 
-        # verificar se o username já existe no banco de dados
-        # confirmar se a senha confere com a senha repetida
-
-        # gerar o hash pra senha informada
         hash_password = generate_password_hash(password, method='scrypt', salt_length=16)
-
         new_user = User(username=username, hash=hash_password)
         db_session.add(new_user)
         db_session.commit()
@@ -105,12 +96,12 @@ def login():
             return error_msg("Usuário não foi informado...")
 
         look_username = User.query.filter_by(username=username).first()
-        print(look_username)
+
         if not look_username:
             return error_msg("Nome de usuário não encontrado.")
 
         password = request.form.get("password")
-        print(password)
+
         if not password:
             return error_msg("Não foi informada a senha...")
 
@@ -124,12 +115,9 @@ def login():
         else:
             return error_msg("Usuário não encontrado.")
 
-        print("usuario autenticado")
-
         return redirect("/")
 
     else:
-
         return render_template("login.html")
 
 @app.route("/logout")
@@ -146,7 +134,6 @@ def perfil():
 
     user_data = db_session.query(User).filter(User.id == user_id).first()
     
-    print(user_data)
     return render_template("perfil.html", user_data=user_data)
 
 @app.route("/select", methods = ["GET", "POST"])
@@ -168,15 +155,12 @@ def select():
         }
         events_to_jinja.append(novo)
 
-    print(events_to_jinja)
-
     if request.method == "POST":
         user_data = db_session.query(User).filter(User.id == user_id).first()
         group_id = user_id
         selected_date = request.form.get("selected_date")
         title = user_data.username
         event_start = event_end = selected_date
-        print(user_id, group_id, title, event_start, event_end)
         
         def insert_event(group_id, title, event_start, event_end, user_id):
             new_event = Agenda(
@@ -194,7 +178,6 @@ def select():
         return redirect("/select")
 
     else:
-
         return render_template("select.html", events = events_to_jinja)
 
 @app.route("/cancel", methods = ["GET", "POST"])
@@ -206,7 +189,6 @@ def cancel():
     # if (mes_seguinte > 12):
     #     mes_seguinte = "01"
     current_dateTime = datetime.now()
-
     datas = db_session.query(Agenda).filter(Agenda.user_id == user_id, Agenda.event_start > current_dateTime)
     events_to_jinja = []
     for evento in datas:
@@ -217,33 +199,29 @@ def cancel():
         }
         events_to_jinja.append(novo)
 
-
     if (request.method == "POST"):
 
         data_cancel = request.form.get("data_cancel")
         date_object = datetime.strptime(data_cancel, '%d-%m-%Y').date()
-        print("data cancel: ")
-        print(f"{date_object} 00:00:00.000000")
         date_to_delete = f"{date_object} 00:00:00.000000"
         event_to_delete = db_session.query(Agenda).filter(Agenda.event_start == date_to_delete, Agenda.user_id == user_id).first()
         if event_to_delete:
             db_session.delete(event_to_delete)
             db_session.commit()
-            print(f"Evento com id {event_to_delete.id} e título '{event_to_delete.title}' deletado.")
+
         else:
             print("Nenhum evento encontrado para deletar.")
         
         return redirect("/cancel")
     
     else:
-
         return render_template("/cancel.html", events = events_to_jinja)
 
 # SQL Alchemy
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    db_session.remove()
+# @app.teardown_appcontext
+# def shutdown_session(exception=None):
+#     db_session.remove()
 
-if __name__ == '__main__':
-    Base.metadata.create_all(bind=engine)
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     Base.metadata.create_all(bind=engine)
+#     app.run(debug=True)
