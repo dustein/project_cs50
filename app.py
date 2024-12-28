@@ -1,8 +1,8 @@
-import os
-import sqlite3
+# import os
+# import sqlite3
 from flask import Flask, render_template, redirect, request, session, url_for
 from flask_session import Session
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 from sqlalchemy import create_engine, func, delete, Column, Integer, String, Text, Float, DateTime, ForeignKey
@@ -184,10 +184,6 @@ def select():
 @login_required
 def cancel():
     user_id = session["user_id"]
-    # mes_hoje = datetime.today().strftime('%m')
-    # mes_seguinte = int(mes_hoje) + 1
-    # if (mes_seguinte > 12):
-    #     mes_seguinte = "01"
     current_dateTime = datetime.now()
     datas = db_session.query(Agenda).filter(Agenda.user_id == user_id, Agenda.event_start > current_dateTime)
     events_to_jinja = []
@@ -217,11 +213,6 @@ def cancel():
     else:
         return render_template("/cancel.html", events = events_to_jinja)
 
-# SQL Alchemy
-# @app.teardown_appcontext
-# def shutdown_session(exception=None):
-#     db_session.remove()
-
-# if __name__ == '__main__':
-#     Base.metadata.create_all(bind=engine)
-#     app.run(debug=True)
+@app.route("/dustein")
+def dustein():
+    return render_template("dustein.html")

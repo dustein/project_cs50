@@ -44,13 +44,13 @@ Here's an organized description of your RASCore app's functionalities with corre
 
 #### RASCore App Functionalities
 
-0. Web Desktop Index Screen
+0. __Web Desktop Index Screen__
 
 ![Desktop Index screen](./static/tela_desktop.png)
 
 This application was developed with a mobile-first focus, but it is perfectly adapted with responsiveness for desktop use and current web browsers.
 
-1. New User Registration
+1. __New User Registration__
 
 ![Register User screen](./static/tela_cadastro-220px.png)
 
@@ -60,21 +60,21 @@ This application was developed with a mobile-first focus, but it is perfectly ad
     Password is provided
     Password confirmation matches
 
-2. User Login
+2. __User Login__
 
 ![Login screen](./static/tela_login-220px.png)
 
 - Login template for existing users
 - Users enter their username and password
 
-3. Main Calendar View (Index)
+3. __Main Calendar View (Index)__
 
 ![Index screen](./static/tela_inicial-300px.png)
 
 - Displays the current month's calendar
 - Shows all scheduled dates with corresponding usernames
 
-4. Date Selection
+4. __Date Selection__
 
 ![Select Date screen](./static/tela_selecione-300px.png)
 
@@ -84,14 +84,14 @@ This application was developed with a mobile-first focus, but it is perfectly ad
     Only future dates can be selected
     Already scheduled dates are unavailable
 
-5. Cancellation Feature
+5. __Cancellation Feature__
 
 ![Cancel Schedule screen](./static/tela_cancela-220px.png)
 
 - Displays a list of days scheduled by the user
 - Allows cancellation of individual scheduled days as needed
 
-6. User Profile
+6. __User Profile__
 
 ![User Profile screen](./static/tela_perfil-220px.png)
 
