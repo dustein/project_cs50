@@ -1,5 +1,5 @@
 # RASCore Web App
-#### Video Demo:  <URL HERE>
+#### Video Demo: https://www.youtube.com/watch?v=oMZNBSxk5aU
 #### Description:
 
 RASCore is an innovative and practical web application that solves a real-world work scheduling problem. Here's a summary of the main features and technologies of this project:
